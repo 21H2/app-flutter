@@ -70,7 +70,9 @@ Future<Response> buildHttpResponse(
   Map<String, String>? header,
 }) async {
   // USE MOCK DATA MODE - Return mock responses instead of making real API calls
+  // WARNING: Mock mode should ONLY be used for testing and demos, NOT production!
   if (USE_MOCK_DATA && !endPoint.startsWith('http')) {
+    log('[MOCK MODE] ⚠️  WARNING: Using mock data - not for production!');
     log('[MOCK MODE] Endpoint: $endPoint');
     log('[MOCK MODE] Request: ${jsonEncode(request)}');
     

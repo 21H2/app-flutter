@@ -39,8 +39,8 @@ fi
 
 cd "$APP_DIR"
 
-# Check if USE_MOCK_DATA is enabled
-if grep -q "const bool USE_MOCK_DATA = true" lib/configs.dart; then
+# Check if USE_MOCK_DATA is enabled (robust pattern matching)
+if grep -q -E "const\s+bool\s+USE_MOCK_DATA\s*=\s*true" lib/configs.dart; then
     echo -e "${GREEN}✓ Mock data mode is enabled${NC}"
 else
     echo -e "${YELLOW}⚠ Warning: Mock data mode is not enabled${NC}"

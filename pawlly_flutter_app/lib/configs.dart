@@ -1,7 +1,26 @@
 // ignore_for_file: constant_identifier_names
 import 'package:firebase_core/firebase_core.dart';
 
-/// NO BACKEND MODE - Set to true to use mock data instead of real API calls
+/// ============================================================================
+/// NO BACKEND MODE CONFIGURATION
+/// ============================================================================
+/// 
+/// WARNING: Mock mode is for TESTING and DEMO purposes ONLY!
+/// DO NOT use in production with real user data!
+/// 
+/// When USE_MOCK_DATA = true:
+/// - All API calls return mock data
+/// - No backend server required
+/// - Data stored locally only
+/// - Accepts any login credentials
+/// - NO security validation
+/// 
+/// For production use:
+/// - Set USE_MOCK_DATA = false
+/// - Configure DOMAIN_URL below
+/// - Ensure backend server is running
+/// - Implement proper security
+/// ============================================================================
 const bool USE_MOCK_DATA = true;
 
 const APP_NAME = 'Pawlly';

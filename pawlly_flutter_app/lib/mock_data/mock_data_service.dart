@@ -2,12 +2,15 @@
 import 'dart:convert';
 import '../models/base_response_model.dart';
 
+/// WARNING: This mock data service is for TESTING and DEMO purposes ONLY.
+/// DO NOT use in production with real user data!
+/// Set USE_MOCK_DATA = false in configs.dart before releasing to production.
 class MockDataService {
   static final MockDataService _instance = MockDataService._internal();
   factory MockDataService() => _instance;
   MockDataService._internal();
 
-  // Mock user data
+  // Mock user data - TESTING ONLY, NOT FOR PRODUCTION USE
   static const String mockUserToken = 'mock_token_12345';
   static const String mockUserId = '1';
   
