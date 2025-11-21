@@ -1,6 +1,9 @@
 // ignore_for_file: constant_identifier_names
 import 'package:firebase_core/firebase_core.dart';
 
+/// NO BACKEND MODE - Set to true to use mock data instead of real API calls
+const bool USE_MOCK_DATA = true;
+
 const APP_NAME = 'Pawlly';
 const APP_LOGO_URL = '$DOMAIN_URL/img/logo/mini_logo.png';
 const DEFAULT_LANGUAGE = 'en';

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Distribution method: app-store, ad-hoc, enterprise, or development -->
+    <key>method</key>
+    <string>app-store</string>
+    
+    <!-- Your Apple Developer Team ID (find at https://developer.apple.com/account) -->
+    <key>teamID</key>
+    <string>YOUR_TEAM_ID_HERE</string>
+    
+    <!-- Upload symbols for crash reporting -->
+    <key>uploadSymbols</key>
+    <true/>
+    
+    <!-- Upload bitcode (deprecated in Xcode 14+, can be removed) -->
+    <key>uploadBitcode</key>
+    <false/>
+    
+    <!-- App thinning -->
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+    
+    <!-- Compilation mode -->
+    <key>compileBitcode</key>
+    <false/>
+    
+    <!-- Signing style -->
+    <key>signingStyle</key>
+    <string>automatic</string>
+    
+    <!-- Provisioning profiles (if using manual signing, uncomment and configure) -->
+    <!--
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.your.bundleid</key>
+        <string>Provisioning Profile Name</string>
+    </dict>
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    -->
+</dict>
+</plist>
