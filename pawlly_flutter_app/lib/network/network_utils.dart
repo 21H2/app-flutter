@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../configs.dart';
 import '../utils/local_storage.dart';
 import 'package:pawlly/utils/library.dart';
+import '../mock_data/mock_data_service.dart';
 
 Map<String, String> buildHeaderTokens({
   Map? extraKeys,
@@ -68,6 +69,28 @@ Future<Response> buildHttpResponse(
   Map? extraKeys,
   Map<String, String>? header,
 }) async {
+  // USE MOCK DATA MODE - Return mock responses instead of making real API calls
+  // WARNING: Mock mode should ONLY be used for testing and demos, NOT production!
+  if (USE_MOCK_DATA && !endPoint.startsWith('http')) {
+    log('[MOCK MODE] ⚠️  WARNING: Using mock data - not for production!');
+    log('[MOCK MODE] Endpoint: $endPoint');
+    log('[MOCK MODE] Request: ${jsonEncode(request)}');
+    
+    final mockData = await MockDataService.getMockResponseAsync(
+      endPoint,
+      requestData: request,
+    );
+    
+    final mockResponse = Response(
+      jsonEncode(mockData),
+      200,
+      headers: {'content-type': 'application/json'},
+    );
+    
+    log('[MOCK MODE] Response: ${mockResponse.body}');
+    return mockResponse;
+  }
+  
   var headers =
       header ?? buildHeaderTokens(extraKeys: extraKeys, endPoint: endPoint);
   Uri url = buildBaseUrl(endPoint);
