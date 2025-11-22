@@ -1,0 +1,251 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., 2.2.6)'
+        required: false
+        default: 'latest'
+
+jobs:
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+          cache: true
+      
+      - name: Verify Flutter installation
+        run: |
+          flutter --version
+          flutter doctor -v
+      
+      - name: Get dependencies
+        working-directory: ./pawlly_flutter_app
+        run: flutter pub get
+      
+      - name: Verify mock data mode
+        working-directory: ./pawlly_flutter_app
+        run: |
+          if grep -q -E "const\s+bool\s+USE_MOCK_DATA\s*=\s*true" lib/configs.dart; then
+            echo "✓ Mock data mode is enabled"
+          else
+            echo "⚠ Warning: Mock data mode is not enabled"
+            exit 1
+          fi
+      
+      - name: Run Flutter analyze
+        working-directory: ./pawlly_flutter_app
+        run: flutter analyze
+      
+      - name: Build APK (split per ABI)
+        working-directory: ./pawlly_flutter_app
+        run: flutter build apk --release --split-per-abi
+      
+      - name: Build App Bundle
+        working-directory: ./pawlly_flutter_app
+        run: flutter build appbundle --release
+      
+      - name: Generate checksums
+        working-directory: ./pawlly_flutter_app/build/app/outputs/flutter-apk
+        run: |
+          sha256sum *.apk > checksums.txt
+          cat checksums.txt
+      
+      - name: List build outputs
+        run: |
+          echo "=== APK Files ==="
+          ls -lh pawlly_flutter_app/build/app/outputs/flutter-apk/
+          echo ""
+          echo "=== App Bundle ==="
+          ls -lh pawlly_flutter_app/build/app/outputs/bundle/release/
+      
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: |
+            pawlly_flutter_app/build/app/outputs/flutter-apk/*.apk
+            pawlly_flutter_app/build/app/outputs/flutter-apk/checksums.txt
+          retention-days: 90
+      
+      - name: Upload App Bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-bundle
+          path: pawlly_flutter_app/build/app/outputs/bundle/release/app-release.aab
+          retention-days: 90
+
+  build-ios:
+    name: Build iOS
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+          cache: true
+      
+      - name: Verify Flutter installation
+        run: |
+          flutter --version
+          flutter doctor -v
+      
+      - name: Get dependencies
+        working-directory: ./pawlly_flutter_app
+        run: flutter pub get
+      
+      - name: Verify mock data mode
+        working-directory: ./pawlly_flutter_app
+        run: |
+          if grep -q -E "const\s+bool\s+USE_MOCK_DATA\s*=\s*true" lib/configs.dart; then
+            echo "✓ Mock data mode is enabled"
+          else
+            echo "⚠ Warning: Mock data mode is not enabled"
+            exit 1
+          fi
+      
+      - name: Run Flutter analyze
+        working-directory: ./pawlly_flutter_app
+        run: flutter analyze
+      
+      - name: Install CocoaPods dependencies
+        working-directory: ./pawlly_flutter_app/ios
+        run: pod install
+      
+      - name: Build iOS (no codesign)
+        working-directory: ./pawlly_flutter_app
+        run: flutter build ios --release --no-codesign
+      
+      - name: List build outputs
+        run: |
+          echo "=== iOS Build Output ==="
+          ls -lh pawlly_flutter_app/build/ios/iphoneos/
+      
+      - name: Create iOS build info
+        working-directory: ./pawlly_flutter_app
+        run: |
+          echo "iOS build completed successfully" > build/ios/BUILD_INFO.txt
+          echo "Build date: $(date)" >> build/ios/BUILD_INFO.txt
+          echo "Note: This is an unsigned iOS build. Code signing is required for distribution." >> build/ios/BUILD_INFO.txt
+          echo "Refer to BUILD_GUIDE.md for IPA creation instructions." >> build/ios/BUILD_INFO.txt
+      
+      - name: Upload iOS build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: |
+            pawlly_flutter_app/build/ios/iphoneos/Runner.app
+            pawlly_flutter_app/build/ios/BUILD_INFO.txt
+          retention-days: 90
+
+  create-release:
+    name: Create GitHub Release
+    needs: [build-android, build-ios]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Download Android APKs
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apks
+          path: ./release/android
+      
+      - name: Download Android Bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: android-bundle
+          path: ./release/android
+      
+      - name: Download iOS build
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-build
+          path: ./release/ios
+      
+      - name: List release files
+        run: |
+          echo "=== Release Files ==="
+          find release -type f -exec ls -lh {} \;
+      
+      - name: Read release notes
+        id: release_notes
+        run: |
+          if [ -f RELEASE_NOTES.md ]; then
+            echo "notes<<EOF" >> $GITHUB_OUTPUT
+            cat RELEASE_NOTES.md >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "notes=Release ${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/android/*.apk
+            release/android/*.aab
+            release/android/checksums.txt
+          body: |
+            # Pawlly Flutter App - ${{ github.ref_name }}
+            
+            ## Android Builds
+            - **APKs**: Split per ABI for optimized size
+              - `app-armeabi-v7a-release.apk` - 32-bit ARM devices
+              - `app-arm64-v8a-release.apk` - 64-bit ARM devices (most modern phones)
+              - `app-x86_64-release.apk` - 64-bit Intel/AMD devices
+            - **App Bundle**: `app-release.aab` - For Google Play Store upload
+            
+            ## iOS Build
+            - iOS build artifacts are available but require code signing for distribution
+            - Refer to `BUILD_GUIDE.md` for IPA creation instructions
+            - For App Store or TestFlight distribution, you'll need to sign the app with your Apple Developer certificate
+            
+            ## Installation
+            ### Android
+            1. Download the appropriate APK for your device
+            2. Enable "Install from Unknown Sources" in your device settings
+            3. Install the APK
+            
+            ### iOS
+            - iOS requires code signing and cannot be directly installed from GitHub releases
+            - Use Xcode or Apple Configurator for installation
+            - For distribution, create an IPA using the BUILD_GUIDE.md instructions
+            
+            ## Notes
+            - This is the **No Backend Version** that uses mock data
+            - All features work in demo mode without requiring a server
+            
+            ## Release Notes
+            ${{ steps.release_notes.outputs.notes }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

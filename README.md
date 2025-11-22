@@ -40,7 +40,27 @@ flutter build ios --release
 
 ## Documentation
 - [**BUILD_GUIDE.md**](BUILD_GUIDE.md) - Comprehensive build and release instructions
+- [**GitHub Actions Workflows**](.github/workflows/README.md) - Automated build and release documentation
 - [pubspec.yaml](pawlly_flutter_app/pubspec.yaml) - Dependencies and project configuration
+
+## Automated Builds
+
+This repository includes GitHub Actions workflows for automated building and releasing:
+
+### 🚀 Automatic Release
+Push a version tag to automatically build and create a release:
+```bash
+git tag -a v2.2.7 -m "Release version 2.2.7"
+git push origin v2.2.7
+```
+
+### 🔧 Manual Build
+Trigger builds manually from the GitHub Actions tab with custom options (platform and build mode).
+
+### ✅ CI/CD
+Pull requests automatically trigger build validation to ensure code quality.
+
+See [.github/workflows/README.md](.github/workflows/README.md) for complete workflow documentation.
 
 ## Configuration
 The app runs in mock data mode by default. To configure:

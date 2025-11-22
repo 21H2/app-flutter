@@ -8,11 +8,13 @@ Welcome to the Pawlly No-Backend Version documentation. This index will help you
 |----------|---------|-----|
 | [QUICKSTART.md](QUICKSTART.md) | Get started in 5 minutes | New users, quick setup |
 | [README.md](README.md) | Project overview | Everyone |
+| [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) | GitHub Actions automation | Developers, Release managers |
 | [BUILD_GUIDE.md](BUILD_GUIDE.md) | Complete build instructions | Developers building the app |
 | [BUILD_WORKFLOW.md](BUILD_WORKFLOW.md) | Step-by-step workflow | Release managers |
 | [RELEASE_NOTES.md](RELEASE_NOTES.md) | Release information | Everyone |
 | [FAQ.md](FAQ.md) | Common questions | Troubleshooting |
 | [build.sh](build.sh) | Automated build script | Developers |
+| [.github/workflows/README.md](.github/workflows/README.md) | Workflow details | DevOps, CI/CD |
 
 ## Getting Started
 
@@ -27,9 +29,10 @@ Welcome to the Pawlly No-Backend Version documentation. This index will help you
 3. Use [build.sh](build.sh) - automate the build process
 
 ### 📦 Ready to Release?
-1. Review [RELEASE_NOTES.md](RELEASE_NOTES.md) - understand what you're releasing
-2. Follow [BUILD_WORKFLOW.md](BUILD_WORKFLOW.md) - complete release checklist
-3. Refer to [BUILD_GUIDE.md](BUILD_GUIDE.md) - distribution methods
+1. Read [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) - use GitHub Actions for automated releases
+2. Review [RELEASE_NOTES.md](RELEASE_NOTES.md) - understand what you're releasing
+3. Follow [BUILD_WORKFLOW.md](BUILD_WORKFLOW.md) - complete release checklist (manual)
+4. Refer to [BUILD_GUIDE.md](BUILD_GUIDE.md) - distribution methods
 
 ## Documentation by Topic
 
@@ -39,10 +42,12 @@ Welcome to the Pawlly No-Backend Version documentation. This index will help you
 - **Dependencies**: See [QUICKSTART.md](QUICKSTART.md) → Step 2
 
 ### Building
+- **Automated Builds**: See [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) → GitHub Actions workflows
 - **Android APK**: See [BUILD_GUIDE.md](BUILD_GUIDE.md) → Building for Android
 - **iOS IPA**: See [BUILD_GUIDE.md](BUILD_GUIDE.md) → Building for iOS
 - **Build Script**: See [build.sh](build.sh) or [QUICKSTART.md](QUICKSTART.md) → Build Script Usage
 - **Build Workflow**: See [BUILD_WORKFLOW.md](BUILD_WORKFLOW.md) → Complete workflow
+- **CI/CD**: See [.github/workflows/README.md](.github/workflows/README.md) → Workflow documentation
 
 ### Configuration
 - **Mock Mode**: See [README.md](README.md) → Configuration
@@ -184,7 +189,37 @@ Welcome to the Pawlly No-Backend Version documentation. This index will help you
 - Checksum generation
 - Error handling
 
-**Use this if**: You want to automate the build process.
+**Use this if**: You want to automate the build process locally.
+
+---
+
+### [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md)
+**Purpose**: Quick reference for GitHub Actions workflows
+**Contents**:
+- Workflow overview
+- Creating releases automatically
+- Manual builds
+- CI/CD validation
+- Version tagging
+- Troubleshooting workflows
+- Best practices
+
+**Read this if**: You want to use GitHub Actions for automated builds and releases.
+
+---
+
+### [.github/workflows/README.md](.github/workflows/README.md)
+**Purpose**: Detailed GitHub Actions workflow documentation
+**Contents**:
+- Workflow configuration
+- Trigger conditions
+- Artifact management
+- Advanced usage
+- Security configuration
+- Custom signing
+- Complete reference
+
+**Read this if**: You need detailed workflow configuration or want to customize CI/CD.
 
 ---
 
@@ -196,11 +231,19 @@ app-flutter/
 ├── QUICKSTART.md               # Quick start guide
 ├── BUILD_GUIDE.md              # Comprehensive build guide
 ├── BUILD_WORKFLOW.md           # Step-by-step workflow
+├── WORKFLOW_GUIDE.md           # GitHub Actions quick reference
 ├── RELEASE_NOTES.md            # Release information
 ├── FAQ.md                      # Frequently asked questions
 ├── DOCUMENTATION_INDEX.md      # This file
 ├── build.sh                    # Build automation script
 ├── .gitignore                  # Git ignore rules
+│
+├── .github/
+│   └── workflows/              # GitHub Actions workflows
+│       ├── README.md          # Workflow documentation
+│       ├── build-and-release.yml  # Release automation
+│       ├── manual-build.yml   # Manual build workflow
+│       └── ci.yml             # CI validation
 │
 └── pawlly_flutter_app/         # Flutter application
     ├── lib/
@@ -239,7 +282,12 @@ app-flutter/
 2. Search [FAQ.md](FAQ.md) for your specific issue
 3. Review [BUILD_GUIDE.md](BUILD_GUIDE.md) → Troubleshooting
 
-### Scenario 5: I Want to Customize
+### Scenario 5: I Want to Automate Releases
+1. Read [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) for GitHub Actions overview
+2. Review [.github/workflows/README.md](.github/workflows/README.md) for details
+3. Push a version tag to trigger automatic release
+
+### Scenario 6: I Want to Customize
 1. Read [FAQ.md](FAQ.md) → Configuration section
 2. Review [BUILD_GUIDE.md](BUILD_GUIDE.md) → Configuration
 3. Check source code in `pawlly_flutter_app/lib/`
@@ -249,6 +297,7 @@ app-flutter/
 For offline reference, these documents are print-friendly:
 - [QUICKSTART.md](QUICKSTART.md) - ~6 pages
 - [BUILD_GUIDE.md](BUILD_GUIDE.md) - ~15 pages
+- [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) - ~8 pages
 - [FAQ.md](FAQ.md) - ~12 pages
 
 ## Contributing to Documentation
@@ -281,6 +330,7 @@ If you find errors or want to improve documentation:
 - [Flutter DevTools](https://docs.flutter.dev/development/tools/devtools/overview)
 - [Android Studio](https://developer.android.com/studio)
 - [Xcode](https://developer.apple.com/xcode/)
+- [GitHub Actions](https://docs.github.com/en/actions)
 
 ---
 
@@ -293,6 +343,8 @@ If you find errors or want to improve documentation:
 | Build Android APK | BUILD_GUIDE.md | `flutter build apk --release --split-per-abi` |
 | Build iOS IPA | BUILD_GUIDE.md | `flutter build ios --release` |
 | Use build script | build.sh | `./build.sh android release` |
+| **Auto release** | **WORKFLOW_GUIDE.md** | **`git tag v2.2.7 && git push origin v2.2.7`** |
+| Manual workflow | WORKFLOW_GUIDE.md | Use GitHub Actions UI |
 | Clean build | QUICKSTART.md | `flutter clean` |
 | Check environment | QUICKSTART.md | `flutter doctor` |
 | View devices | QUICKSTART.md | `flutter devices` |
