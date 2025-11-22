@@ -26,6 +26,8 @@ jobs:
     name: Build Android (${{ github.event.inputs.build_mode }})
     runs-on: ubuntu-latest
     if: github.event.inputs.platform == 'android' || github.event.inputs.platform == 'both'
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
@@ -74,6 +76,8 @@ jobs:
     name: Build iOS (${{ github.event.inputs.build_mode }})
     runs-on: macos-latest
     if: github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'both'
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository

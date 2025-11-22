@@ -39,6 +39,7 @@ flutter build ios --release
 ```
 
 ## Documentation
+- [**QUICKSTART_WORKFLOWS.md**](QUICKSTART_WORKFLOWS.md) - Get started with GitHub Actions in 2 minutes
 - [**BUILD_GUIDE.md**](BUILD_GUIDE.md) - Comprehensive build and release instructions
 - [**GitHub Actions Workflows**](.github/workflows/README.md) - Automated build and release documentation
 - [pubspec.yaml](pawlly_flutter_app/pubspec.yaml) - Dependencies and project configuration

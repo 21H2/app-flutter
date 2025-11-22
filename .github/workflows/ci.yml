@@ -21,6 +21,8 @@ jobs:
   analyze:
     name: Analyze Code
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
@@ -50,6 +52,8 @@ jobs:
     name: Test Build - Android
     runs-on: ubuntu-latest
     needs: analyze
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
@@ -83,6 +87,8 @@ jobs:
     name: Test Build - iOS
     runs-on: macos-latest
     needs: analyze
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository

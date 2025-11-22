@@ -7,6 +7,7 @@ Welcome to the Pawlly No-Backend Version documentation. This index will help you
 | Document | Purpose | For |
 |----------|---------|-----|
 | [QUICKSTART.md](QUICKSTART.md) | Get started in 5 minutes | New users, quick setup |
+| [QUICKSTART_WORKFLOWS.md](QUICKSTART_WORKFLOWS.md) | Quick start for workflows | Using GitHub Actions |
 | [README.md](README.md) | Project overview | Everyone |
 | [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) | GitHub Actions automation | Developers, Release managers |
 | [BUILD_GUIDE.md](BUILD_GUIDE.md) | Complete build instructions | Developers building the app |
