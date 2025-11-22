@@ -1,0 +1,121 @@
+name: Manual Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - android
+          - ios
+          - both
+      build_mode:
+        description: 'Build mode'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - release
+          - debug
+
+jobs:
+  build-android:
+    name: Build Android (${{ github.event.inputs.build_mode }})
+    runs-on: ubuntu-latest
+    if: github.event.inputs.platform == 'android' || github.event.inputs.platform == 'both'
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+          cache: true
+      
+      - name: Get dependencies
+        working-directory: ./pawlly_flutter_app
+        run: flutter pub get
+      
+      - name: Run Flutter analyze
+        working-directory: ./pawlly_flutter_app
+        run: flutter analyze
+        continue-on-error: true
+      
+      - name: Build APK (Release)
+        if: github.event.inputs.build_mode == 'release'
+        working-directory: ./pawlly_flutter_app
+        run: flutter build apk --release --split-per-abi
+      
+      - name: Build APK (Debug)
+        if: github.event.inputs.build_mode == 'debug'
+        working-directory: ./pawlly_flutter_app
+        run: flutter build apk --debug
+      
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks-${{ github.event.inputs.build_mode }}
+          path: pawlly_flutter_app/build/app/outputs/flutter-apk/*.apk
+          retention-days: 30
+
+  build-ios:
+    name: Build iOS (${{ github.event.inputs.build_mode }})
+    runs-on: macos-latest
+    if: github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'both'
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+          cache: true
+      
+      - name: Get dependencies
+        working-directory: ./pawlly_flutter_app
+        run: flutter pub get
+      
+      - name: Run Flutter analyze
+        working-directory: ./pawlly_flutter_app
+        run: flutter analyze
+        continue-on-error: true
+      
+      - name: Install CocoaPods dependencies
+        working-directory: ./pawlly_flutter_app/ios
+        run: pod install
+      
+      - name: Build iOS (Release)
+        if: github.event.inputs.build_mode == 'release'
+        working-directory: ./pawlly_flutter_app
+        run: flutter build ios --release --no-codesign
+      
+      - name: Build iOS (Debug)
+        if: github.event.inputs.build_mode == 'debug'
+        working-directory: ./pawlly_flutter_app
+        run: flutter build ios --debug --no-codesign
+      
+      - name: Upload iOS build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-${{ github.event.inputs.build_mode }}
+          path: pawlly_flutter_app/build/ios/iphoneos/Runner.app
+          retention-days: 30
